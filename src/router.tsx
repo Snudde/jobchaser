@@ -3,6 +3,8 @@ import HomePage from "./pages/HomePage.tsx";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
 import Jobs from "./pages/Jobs.tsx";
 import App from "./App.tsx";
+import SignUpPage from "./pages/SignUpPage.tsx";
+import SignInPage from "./pages/SignInPage.tsx";
 
 const router = createBrowserRouter([
   {
@@ -11,6 +13,8 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "jobs", element: <Jobs /> },
+      { path: "signup", element: <SignUpPage /> },
+      { path: "signin", element: <SignInPage /> },
     ],
   },
   {
