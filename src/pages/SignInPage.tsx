@@ -1,54 +1,68 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
-
-type SignInFormData = {
-  email: string;
-  password: string;
-};
+import { useAuth } from "../context/AuthContext";
 
 export default function SignInPage() {
+  const API = "http://localhost:3000";
   const {
     register,
-    handleSubmit,
+    setError,
     formState: { errors },
-  } = useForm<SignInFormData>();
+  } = useForm();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const navigate = useNavigate();
+  const { login } = useAuth();
 
-  const onSubmit = (data: SignInFormData) => {
-    console.log("Sign in data:", data);
-  };
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
+    const res = await fetch(`${API}/auth/signin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+    console.log(data);
+
+    if (!res.ok) {
+      setError("name", {
+        type: "manual",
+        message: data.error ?? "Något gick fel",
+      });
+      return;
+    }
+
+    login(data.token, data.user);
+    navigate("/");
+  }
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-6">Sign In</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <>
+      <form onSubmit={handleSubmit}>
         <div>
+          <label htmlFor="email">E-mail</label>
           <input
-            {...register("email", { required: "Email is required" })}
-            placeholder="Email"
+            id="email"
             type="email"
-            className="w-full border p-2 rounded"
+            value={email}
+            placeholder="test@test.se"
+            onChange={(e) => setEmail(e.target.value)}
           />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
         </div>
         <div>
+          <label htmlFor="email">Password</label>
           <input
-            {...register("password", { required: "Password is required" })}
-            placeholder="Password"
+            id="password"
             type="password"
-            className="w-full border p-2 rounded"
+            value={password}
+            placeholder="********"
+            onChange={(e) => setPassword(e.target.value)}
           />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
-          )}
         </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-        >
-          Sign In
-        </button>
+        <button type="submit">Log in</button>
       </form>
-    </div>
+    </>
   );
 }

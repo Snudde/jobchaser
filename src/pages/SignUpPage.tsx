@@ -1,68 +1,67 @@
+import React, { useState } from "react";
+import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
+import { useAuth } from "../context/AuthContext";
 
-type SignUpFormData = {
-  name: string;
-  email: string;
-  password: string;
-};
-
-export default function SignUpPage() {
+function SignUpPage() {
+  const API = "http://localhost:3000";
   const {
     register,
-    handleSubmit,
+    setError,
     formState: { errors },
-  } = useForm<SignUpFormData>();
+  } = useForm();
+  const [email, setEmail] = useState();
+  const [password, setPassword] = useState();
+  let navigate = useNavigate();
+  const { login } = useAuth();
 
-  const onSubmit = (data: SignUpFormData) => {
-    console.log("Sign up data:", data);
-  };
+  async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    // setError("",{});
+    console.log(typeof password);
+    const res = await fetch(`${API}/auth/signup`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      setError("name", data.error ?? "Något gick fel");
+
+      return;
+    }
+
+    login(data.token, data.user);
+    navigate("/");
+  }
+
+  function handleEmail(emailChange: any) {
+    setEmail(emailChange.target.value);
+  }
+
+  function handlePassword(passwordChange: any) {
+    setPassword(passwordChange.target.value);
+  }
 
   return (
-    <div className="max-w-md mx-auto mt-10">
-      <h2 className="text-2xl font-bold mb-6">Create account</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        <div>
-          <input
-            {...register("name", { required: "Name is required" })}
-            placeholder="Name"
-            className="w-full border p-2 rounded"
-          />
-          {errors.name && (
-            <p className="text-red-500 text-sm">{errors.name.message}</p>
-          )}
-        </div>
-        <div>
-          <input
-            {...register("email", { required: "Email is required" })}
-            placeholder="Email"
-            type="email"
-            className="w-full border p-2 rounded"
-          />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
-        </div>
-        <div>
-          <input
-            {...register("password", {
-              required: "Password is required",
-              minLength: { value: 6, message: "Min 6 characters" },
-            })}
-            placeholder="Password"
-            type="password"
-            className="w-full border p-2 rounded"
-          />
-          {errors.password && (
-            <p className="text-red-500 text-sm">{errors.password.message}</p>
-          )}
-        </div>
-        <button
-          type="submit"
-          className="bg-blue-600 text-white p-2 rounded hover:bg-blue-700"
-        >
-          Sign Up
-        </button>
+    <>
+      <form onSubmit={handleSubmit}>
+        <label htmlFor="email">Email</label>
+        <input type="email" id="email" name="email" onChange={handleEmail} />
+        <label htmlFor="password">password</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          onChange={handlePassword}
+        />
+
+        <button type="submit">Submit</button>
       </form>
-    </div>
+    </>
   );
 }
+
+export default SignUpPage;

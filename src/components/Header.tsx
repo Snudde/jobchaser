@@ -1,7 +1,8 @@
 import { Binoculars } from "lucide-react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import Button from "./Button";
 import { ThemeToggle } from './ThemeToggle';
+import { useAuth } from "../context/AuthContext";
 
 interface HeaderProps {
   name: string;
@@ -9,6 +10,14 @@ interface HeaderProps {
 }
 
 export default function Header({ name, tagline }: HeaderProps) {
+  const { isLoggedIn, logout } = useAuth();
+  const navigate = useNavigate();
+
+  function handleSignOut() {
+    logout();
+    navigate("/");
+  }
+
   return (
     <header className="header w-full flex justify-between mb-5 bg-blue-950 light:bg-amber-500 p-5 items-center">
       <div className="flex flex-col items-center">
@@ -27,16 +36,37 @@ export default function Header({ name, tagline }: HeaderProps) {
               <Button onClick={() => {}} text="Jobs" />
             </Link>
           </li>
-          <li>
-            <Link to={"/signup"} className="text-blue-500">
-              <Button onClick={() => {}} text="Sign Up" />
-            </Link>
-          </li>
-          <li>
-            <Link to={"/signin"} className="text-blue-500">
-              <Button onClick={() => {}} text="Sign In" />
-            </Link>
-          </li>
+          {!isLoggedIn && (
+            <>
+              <li>
+                <Link to={"/signup"} className="text-blue-500">
+                  <Button onClick={() => {}} text="Sign Up" />
+                </Link>
+              </li>
+              <li>
+                <Link to={"/signin"} className="text-blue-500">
+                  <Button onClick={() => {}} text="Sign In" />
+                </Link>
+              </li>
+            </>
+          )}
+          {isLoggedIn && (
+            <>
+              <li>
+                <Link to={"/my-jobs"} className="text-blue-500">
+                  <Button onClick={() => {}} text="My Jobs" />
+                </Link>
+              </li>
+              <li>
+                <Link to={"/my-listings"} className="text-blue-500">
+                  <Button onClick={() => {}} text="My Listings" />
+                </Link>
+              </li>
+              <li>
+                <Button onClick={handleSignOut} text="Sign Out" />
+              </li>
+            </>
+          )}
           <li>
             <ThemeToggle />
           </li>
