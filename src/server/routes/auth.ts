@@ -41,6 +41,7 @@ router.post("/signup", async (req, res) => {
     res.status(201).json({ token, user });
   } catch (error: unknown) {
     console.log(error);
+    res.status(500).json({ error: "Serverfel vid registrering" });
   }
 });
 
@@ -76,6 +77,7 @@ router.post("/signin", async (req, res) => {
     res.json({ token, user: { id: user.id, email: user.email } });
   } catch (error: unknown) {
     console.log(error);
+    res.status(500).json({ error: "Serverfel vid inloggning" });
   }
 });
 

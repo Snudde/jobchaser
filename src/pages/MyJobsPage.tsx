@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import toast from "react-hot-toast";
 
 const API = "http://localhost:3000";
 
@@ -38,12 +38,15 @@ export default function MyJobsPage() {
   }
 
   useEffect(() => {
-    fetch(`${API}/jobs?source=api`)
+    const token = localStorage.getItem("token");
+    fetch(`${API}/jobs/mine?source=api`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setJobs(data);
       })
-      .catch((error) => console.error(error))
+      .catch(() => toast.error("Kunde inte hämta jobb"))
       .finally(() => setLoading(false));
   }, []);
 
@@ -82,9 +85,6 @@ export default function MyJobsPage() {
                     Annons
                   </a>
                 )}
-                <Link to={`/jobs/${job.id}/edit`} className="text-sm border border-gray-500 rounded px-2 py-1 hover:border-white">
-                  Redigera
-                </Link>
                 <button
                   onClick={() => handleDelete(job.id)}
                   className="text-sm border border-red-500 text-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-black"

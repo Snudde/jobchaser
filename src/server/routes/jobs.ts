@@ -16,6 +16,15 @@ router.get("/", async (req, res) => {
   res.json(allJobs);
 });
 
+// GET /jobs/mine — skyddad, hämtar bara inloggad användares jobb
+router.get("/mine", authenticate, async (req: AuthRequest, res) => {
+  const { source } = req.query;
+  const conditions = [eq(jobs.userId, req.userId!)];
+  if (source) conditions.push(eq(jobs.source, source as string));
+  const myJobs = await db.select().from(jobs).where(and(...conditions));
+  res.json(myJobs);
+});
+
 // GET /jobs/:id — publik, hämta ett specifikt jobb
 router.get("/:id", async (req, res) => {
   const id = parseInt(req.params.id as string);

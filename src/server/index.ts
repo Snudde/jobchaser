@@ -10,7 +10,7 @@ import authRouter from "./routes/auth.js";
 const app = express();
 const port = 3000;
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: /^http:\/\/localhost:\d+$/ }));
 app.use(express.json());
 
 // Health check

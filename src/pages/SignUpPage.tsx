@@ -1,15 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
-import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { useAuth } from "../context/AuthContext";
 
 function SignUpPage() {
   const API = "http://localhost:3000";
-  const {
-    register,
-    setError,
-    formState: { errors },
-  } = useForm();
   const [email, setEmail] = useState();
   const [password, setPassword] = useState();
   let navigate = useNavigate();
@@ -17,8 +12,6 @@ function SignUpPage() {
 
   async function handleSubmit(e: React.SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
-    // setError("",{});
-    console.log(typeof password);
     const res = await fetch(`${API}/auth/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -28,8 +21,7 @@ function SignUpPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      setError("name", data.error ?? "Något gick fel");
-
+      toast.error(data.error ?? "Något gick fel");
       return;
     }
 

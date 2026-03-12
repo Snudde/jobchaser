@@ -1,5 +1,6 @@
 import "./App.css";
 import { Outlet } from "react-router";
+import { Toaster } from "react-hot-toast";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { ThemeProvider } from './context/ThemeContext';
@@ -12,6 +13,7 @@ function App() {
     <ThemeProvider>
       <AuthProvider>
         <div className="wrapper">
+          <Toaster position="top-right" />
           <Header name="JobChaser" tagline="Find your dream job" />
           <main className="p-5 light:bg-amber-400">
             <Outlet />

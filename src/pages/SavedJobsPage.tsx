@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import toast from "react-hot-toast";
 
 const API = "http://localhost:3000";
 
@@ -43,7 +44,7 @@ export default function SavedJobsPage() {
       .then((data) => {
         if (Array.isArray(data)) setJobs(data);
       })
-      .catch((error) => console.error(error))
+      .catch(() => toast.error("Kunde inte hämta sparade jobb"))
       .finally(() => setLoading(false));
   }, []);
 

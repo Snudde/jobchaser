@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import toast from "react-hot-toast";
 
 const API = "http://localhost:3000";
 
@@ -31,12 +32,15 @@ export default function MyListingsPage() {
   }
 
   useEffect(() => {
-    fetch(`${API}/jobs?source=manual`)
+    const token = localStorage.getItem("token");
+    fetch(`${API}/jobs/mine?source=manual`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) setJobs(data);
       })
-      .catch((error) => console.error(error))
+      .catch(() => toast.error("Kunde inte hämta annonser"))
       .finally(() => setLoading(false));
   }, []);
 
