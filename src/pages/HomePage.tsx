@@ -1,16 +1,17 @@
 import { Link } from "react-router";
 import Button from "../components/Button";
-import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/authStore";
 
 export default function HomePage() {
-  const { isLoggedIn } = useAuth();
+  const isLoggedIn = useAuthStore((state) => state.isAuthenticated);
 
   return (
     <>
-      <h1>JobChaser Start page</h1>
-      <h2>Welcome {isLoggedIn ? "back!" : "guest!"}</h2>
+      <h1 className="mb-5">JobChaser</h1>
+      <h2 className="mb-5">Welcome {isLoggedIn ? "back!" : "guest!"}</h2>
+      <div className="flex gap-3">
       <Link to={"/jobs"} className="text-blue-500">
-        <Button onClick={() => {}} text="View Jobs"></Button>
+        <Button onClick={() => {}} text="View Available Jobs"></Button>
       </Link>
       {isLoggedIn && (
         <>
@@ -21,10 +22,11 @@ export default function HomePage() {
             <Button onClick={() => {}} text="My Listings"></Button>
           </Link>
           <Link to={"/jobs/new"} className="text-blue-500">
-            <Button onClick={() => {}} text="Create new job"></Button>
+            <Button onClick={() => {}} text="Submit New Job"></Button>
           </Link>
         </>
       )}
+      </div>
     </>
   );
 }

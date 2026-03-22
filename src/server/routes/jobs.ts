@@ -7,7 +7,6 @@ import { authenticate } from "../middleware/auth";
 
 const router = Router();
 
-// GET /jobs — publik, filtrera med ?source=manual|api
 router.get("/", async (req, res) => {
   const { source } = req.query;
   const allJobs = source
@@ -16,7 +15,6 @@ router.get("/", async (req, res) => {
   res.json(allJobs);
 });
 
-// GET /jobs/mine — skyddad, hämtar bara inloggad användares jobb
 router.get("/mine", authenticate, async (req: AuthRequest, res) => {
   const { source } = req.query;
   const conditions = [eq(jobs.userId, req.userId!)];
@@ -25,25 +23,23 @@ router.get("/mine", authenticate, async (req: AuthRequest, res) => {
   res.json(myJobs);
 });
 
-// GET /jobs/:id — publik, hämta ett specifikt jobb
 router.get("/:id", async (req, res) => {
   const id = parseInt(req.params.id as string);
   const [job] = await db.select().from(jobs).where(eq(jobs.id, id));
 
   if (!job) {
-    res.status(404).json({ error: "Jobb hittades inte" });
+    res.status(404).json({ error: "Job not found" });
     return;
   }
 
   res.json(job);
 });
 
-// POST /jobs — skyddad, måste vara inloggad
 router.post("/", authenticate, async (req: AuthRequest, res) => {
   const { company, headline, location, deadline, url, status, source } = req.body;
 
   if (!company || !headline) {
-    res.status(400).json({ error: "company och headline krävs" });
+    res.status(400).json({ error: "company and headline are required" });
     return;
   }
 
@@ -55,7 +51,6 @@ router.post("/", authenticate, async (req: AuthRequest, res) => {
   res.status(201).json(job);
 });
 
-// PUT /jobs/:id — skyddad, bara ägaren kan redigera
 router.put("/:id", authenticate, async (req: AuthRequest, res) => {
   const id = parseInt(req.params.id as string);
   const { company, headline, location, deadline, url, status } = req.body;
@@ -63,12 +58,12 @@ router.put("/:id", authenticate, async (req: AuthRequest, res) => {
   const [existing] = await db.select().from(jobs).where(eq(jobs.id, id));
 
   if (!existing) {
-    res.status(404).json({ error: "Jobb hittades inte" });
+    res.status(404).json({ error: "Job not found" });
     return;
   }
 
   if (existing.userId !== req.userId) {
-    res.status(403).json({ error: "Du kan bara redigera dina egna jobb" });
+    res.status(403).json({ error: "You can only edit your own jobs" });
     return;
   }
 
@@ -88,19 +83,18 @@ router.put("/:id", authenticate, async (req: AuthRequest, res) => {
   res.json(updated);
 });
 
-// DELETE /jobs/:id — skyddad, bara ägaren kan ta bort
 router.delete("/:id", authenticate, async (req: AuthRequest, res) => {
   const id = parseInt(req.params.id as string);
 
   const [existing] = await db.select().from(jobs).where(eq(jobs.id, id));
 
   if (!existing) {
-    res.status(404).json({ error: "Jobb hittades inte" });
+    res.status(404).json({ error: "Job not found" });
     return;
   }
 
   if (existing.userId !== req.userId) {
-    res.status(403).json({ error: "Du kan bara ta bort dina egna jobb" });
+    res.status(403).json({ error: "You can only delete your own jobs" });
     return;
   }
 

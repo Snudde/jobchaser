@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import toast from "react-hot-toast";
+import { useAuthStore } from "../store/authStore";
 
 const API = "http://localhost:3000";
 
@@ -17,10 +18,9 @@ interface SavedJob {
 export default function MyListingsPage() {
   const [jobs, setJobs] = useState<SavedJob[]>([]);
   const [loading, setLoading] = useState(true);
+  const token = useAuthStore((state) => state.token);
 
   async function handleDelete(id: number) {
-    const token = localStorage.getItem("token");
-
     const res = await fetch(`${API}/jobs/${id}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
@@ -32,7 +32,6 @@ export default function MyListingsPage() {
   }
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
     fetch(`${API}/jobs/mine?source=manual`, {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -40,16 +39,16 @@ export default function MyListingsPage() {
       .then((data) => {
         if (Array.isArray(data)) setJobs(data);
       })
-      .catch(() => toast.error("Kunde inte hämta annonser"))
+      .catch(() => toast.error("Could not fetch listings"))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Laddar...</p>;
-  if (jobs.length === 0) return <p>Inga egna annonser</p>;
+  if (loading) return <p>Loading...</p>;
+  if (jobs.length === 0) return <p>No listings</p>;
 
   return (
     <section>
-      <h1 className="text-2xl font-bold mb-6">Mina annonser</h1>
+      <h1 className="text-2xl font-bold mb-6">My listings</h1>
 
       <ul className="w-full flex flex-wrap gap-4">
         {jobs.map((job) => (
@@ -60,7 +59,7 @@ export default function MyListingsPage() {
               {job.location && <p className="text-sm text-gray-400 mb-1">{job.location}</p>}
               {job.deadline && (
                 <p className="text-sm text-gray-400 mb-1">
-                  Sista ansökan: {new Date(job.deadline).toLocaleDateString("sv-SE")}
+                  Deadline: {new Date(job.deadline).toLocaleDateString("en-US")}
                 </p>
               )}
               <div className="flex items-center gap-3 mt-4">
@@ -71,17 +70,17 @@ export default function MyListingsPage() {
                     rel="noopener noreferrer"
                     className="text-sm text-green-500 hover:underline"
                   >
-                    Annons
+                    Listing
                   </a>
                 )}
                 <Link to={`/jobs/${job.id}/edit`} className="text-sm border border-gray-500 rounded px-2 py-1 hover:border-white">
-                  Redigera
+                  Edit
                 </Link>
                 <button
                   onClick={() => handleDelete(job.id)}
                   className="text-sm border border-red-500 text-red-500 rounded px-2 py-1 hover:bg-red-500 hover:text-black"
                 >
-                  Ta bort
+                  Delete
                 </button>
               </div>
             </article>

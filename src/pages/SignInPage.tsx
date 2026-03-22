@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
-import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/authStore";
 
 export default function SignInPage() {
   const API = "http://localhost:3000";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const login = useAuthStore((state) => state.login);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,11 +22,11 @@ export default function SignInPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      toast.error(data.error ?? "Något gick fel");
+      toast.error(data.error ?? "Something went wrong");
       return;
     }
 
-    login(data.token, data.user);
+    login(data.user, data.token);
     navigate("/");
   }
   return (

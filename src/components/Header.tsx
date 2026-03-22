@@ -2,7 +2,7 @@ import { Binoculars } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import Button from "./Button";
 import { ThemeToggle } from './ThemeToggle';
-import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/authStore";
 
 interface HeaderProps {
   name: string;
@@ -10,7 +10,7 @@ interface HeaderProps {
 }
 
 export default function Header({ name, tagline }: HeaderProps) {
-  const { isLoggedIn, logout } = useAuth();
+  const { isAuthenticated: isLoggedIn, logout } = useAuthStore();
   const navigate = useNavigate();
 
   function handleSignOut() {

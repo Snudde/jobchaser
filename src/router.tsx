@@ -9,6 +9,7 @@ import MyJobsPage from "./pages/MyJobsPage.tsx";
 import MyListingsPage from "./pages/MyListingsPage.tsx";
 import CreateJobPage from "./pages/CreateJobPage.tsx";
 import EditJobPage from "./pages/EditJobPage.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
 const router = createBrowserRouter([
   {
@@ -17,17 +18,42 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <HomePage /> },
       { path: "jobs", element: <Jobs /> },
-      { path: "jobs/new", element: <CreateJobPage /> },
-      { path: "jobs/:id/edit", element: <EditJobPage /> },
-      { path: "my-jobs", element: <MyJobsPage /> },
-      { path: "my-listings", element: <MyListingsPage /> },
+      {
+        path: "jobs/new",
+        element: (
+          <ProtectedRoute>
+            <CreateJobPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "jobs/:id/edit",
+        element: (
+          <ProtectedRoute>
+            <EditJobPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "my-jobs",
+        element: (
+          <ProtectedRoute>
+            <MyJobsPage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "my-listings",
+        element: (
+          <ProtectedRoute>
+            <MyListingsPage />
+          </ProtectedRoute>
+        ),
+      },
       { path: "signup", element: <SignUpPage /> },
       { path: "signin", element: <SignInPage /> },
+      { path: "*", element: <NotFoundPage /> },
     ],
-  },
-  {
-    path: "*",
-    element: <NotFoundPage />,
   },
 ]);
 

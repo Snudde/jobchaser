@@ -5,11 +5,6 @@ export default defineConfig({
   out: "./db/migrations",
   dialect: "postgresql",
   dbCredentials: {
-    user: "postgres",
-    host: "localhost",
-    database: "jobchaser",
-    password: "Dxub71de",
-    port: 5432,
-    ssl: false,
+    url: process.env.DATABASE_URL!,
   },
 });

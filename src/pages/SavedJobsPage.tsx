@@ -15,10 +15,10 @@ interface SavedJob {
 }
 
 const statusLabels: Record<string, string> = {
-  applied: "Ansökt",
-  interview: "Intervju",
-  offer: "Erbjudande",
-  rejected: "Avslag",
+  applied: "Applied",
+  interview: "Interview",
+  offer: "Offer",
+  rejected: "Rejected",
 };
 
 export default function SavedJobsPage() {
@@ -44,33 +44,33 @@ export default function SavedJobsPage() {
       .then((data) => {
         if (Array.isArray(data)) setJobs(data);
       })
-      .catch(() => toast.error("Kunde inte hämta sparade jobb"))
+      .catch(() => toast.error("Could not fetch saved jobs"))
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p>Laddar...</p>;
-  if (jobs.length === 0) return <p>Inga sparade jobb</p>;
+  if (loading) return <p>Loading...</p>;
+  if (jobs.length === 0) return <p>No saved jobs</p>;
 
   return (
     <div>
-      <h1>Sparade jobb</h1>
+      <h1>Saved jobs</h1>
 
       {jobs.map((job) => (
         <div key={job.id} style={{ marginBottom: "20px" }}>
           <h2>{job.headline}</h2>
           <p>{job.company}{job.location ? ` — ${job.location}` : ""}</p>
           {job.deadline && (
-            <p>Sista ansökan: {new Date(job.deadline).toLocaleDateString("sv-SE")}</p>
+            <p>Deadline: {new Date(job.deadline).toLocaleDateString("en-US")}</p>
           )}
           {job.url && (
-            <a href={job.url} target="_blank" rel="noopener noreferrer">Annons</a>
+            <a href={job.url} target="_blank" rel="noopener noreferrer">Listing</a>
           )}
           {job.status && (
             <p>Status: {statusLabels[job.status] ?? job.status}</p>
           )}
-          <Link to={`/jobs/${job.id}/edit`}>Redigera</Link>
+          <Link to={`/jobs/${job.id}/edit`}>Edit</Link>
           <br />
-          <button onClick={() => handleDelete(job.id)}>Ta bort</button>
+          <button onClick={() => handleDelete(job.id)}>Delete</button>
         </div>
       ))}
     </div>

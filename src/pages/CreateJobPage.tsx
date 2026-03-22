@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router";
 import { useForm } from "react-hook-form";
+import { useAuthStore } from "../store/authStore";
 
 type FormData = {
   company: string;
@@ -13,7 +14,7 @@ const API = "http://localhost:3000";
 
 export default function CreateJobPage() {
   const navigate = useNavigate();
-  const token = localStorage.getItem("token");
+  const token = useAuthStore((state) => state.token);
   const {
     register,
     handleSubmit,
@@ -34,7 +35,7 @@ export default function CreateJobPage() {
     const data = await res.json();
 
     if (!res.ok) {
-      setError("root", { message: data.error ?? "Något gick fel" });
+      setError("root", { message: data.error ?? "Something went wrong" });
       return;
     }
 
@@ -46,32 +47,32 @@ export default function CreateJobPage() {
 
   return (
     <div className="max-w-lg">
-      <h1 className="text-2xl font-bold mb-6">Skapa annons</h1>
+      <h1 className="text-2xl font-bold mb-6">Create listing</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
         <div>
-          <label htmlFor="company" className={labelClass}>Företag</label>
-          <input id="company" className={inputClass} {...register("company", { required: "Företag krävs" })} />
+          <label htmlFor="company" className={labelClass}>Company</label>
+          <input id="company" className={inputClass} {...register("company", { required: "Company is required" })} />
           {errors.company && <p role="alert" className="text-red-500 text-sm mt-1">{errors.company.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="headline" className={labelClass}>Jobbtitel</label>
-          <input id="headline" className={inputClass} {...register("headline", { required: "Jobbtitel krävs" })} />
+          <label htmlFor="headline" className={labelClass}>Job title</label>
+          <input id="headline" className={inputClass} {...register("headline", { required: "Job title is required" })} />
           {errors.headline && <p role="alert" className="text-red-500 text-sm mt-1">{errors.headline.message}</p>}
         </div>
 
         <div>
-          <label htmlFor="location" className={labelClass}>Ort</label>
+          <label htmlFor="location" className={labelClass}>Location</label>
           <input id="location" className={inputClass} {...register("location")} />
         </div>
 
         <div>
-          <label htmlFor="deadline" className={labelClass}>Sista ansökningsdag</label>
+          <label htmlFor="deadline" className={labelClass}>Application deadline</label>
           <input id="deadline" type="date" className={inputClass} {...register("deadline")} />
         </div>
 
         <div>
-          <label htmlFor="url" className={labelClass}>Länk till annons</label>
+          <label htmlFor="url" className={labelClass}>Link to listing</label>
           <input id="url" type="url" className={inputClass} {...register("url")} />
         </div>
 
@@ -81,7 +82,7 @@ export default function CreateJobPage() {
           type="submit"
           className="mt-2 border border-green-500 text-green-500 rounded px-4 py-2 hover:bg-green-500 hover:text-black w-fit"
         >
-          Skapa jobb
+          Create job
         </button>
       </form>
     </div>

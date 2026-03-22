@@ -7,25 +7,24 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import type { Job } from "../types/job";
-import { useAuth } from "../context/AuthContext";
+import { useAuthStore } from "../store/authStore";
 
 const API = "http://localhost:3000";
 
 const statusLabels: Record<string, string> = {
-  applied: "Ansökt",
-  interview: "Intervju",
-  offer: "Erbjudande",
-  rejected: "Avslag",
+  applied: "Applied",
+  interview: "Interview",
+  offer: "Offer",
+  rejected: "Rejected",
 };
 
 export default function JobItem(props: Job) {
-  const { isLoggedIn } = useAuth();
+  const { isAuthenticated: isLoggedIn, token } = useAuthStore();
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState("applied");
 
   async function handleSave() {
-    const token = localStorage.getItem("token");
     setSaving(true);
 
     await fetch(`${API}/jobs`, {
@@ -52,7 +51,7 @@ export default function JobItem(props: Job) {
   return (
     <article className="p-4 border border-gray-200 rounded-lg shadow-md bg-zinc-900">
       <p className="flex items-center justify-end text-xs mb-5 border border-green-500 rounded-lg w-fit ml-auto p-2">
-        Posted: {new Date(props.publication_date).toLocaleDateString("sv-SE")}
+        Posted: {new Date(props.publication_date).toLocaleDateString("en-US")}
       </p>
 
       <div className="flex items-center justify-between mb-5">
@@ -66,21 +65,21 @@ export default function JobItem(props: Job) {
       <div className="flex items-center justify-between mt-3">
         <p className="flex items-center gap-1">
           <ReceiptText size={16} />{" "}
-          {props.employment_type?.label ?? "Ej angivet"}
+          {props.employment_type?.label ?? "Not specified"}
         </p>
         <p className="flex items-center gap-1">
           <MapPin size={16} />{" "}
-          {props.workplace_address?.municipality ?? "Ej angivet"}
+          {props.workplace_address?.municipality ?? "Not specified"}
         </p>
       </div>
 
       <div className="flex items-center justify-between mt-2">
         <p className="flex items-center gap-1">
-          <UserRoundCog size={16} /> {props.occupation?.label ?? "Ej angivet"}
+          <UserRoundCog size={16} /> {props.occupation?.label ?? "Not specified"}
         </p>
         <p className="flex items-center gap-1">
-          <Calendar size={16} /> Sista ansökan:{" "}
-          {new Date(props.application_deadline).toLocaleDateString("sv-SE")}
+          <Calendar size={16} /> Deadline:{" "}
+          {new Date(props.application_deadline).toLocaleDateString("en-US")}
         </p>
       </div>
 
@@ -91,14 +90,14 @@ export default function JobItem(props: Job) {
           rel="noopener noreferrer"
           className="flex items-center gap-1 mt-4 text-green-500 hover:underline text-sm"
         >
-          <ExternalLink size={14} /> Ansök här
+          <ExternalLink size={14} /> Apply here
         </a>
       )}
 
       {isLoggedIn && (
         <div className="mt-4 flex items-center gap-2">
           {saved ? (
-            <span className="text-sm text-green-500">Sparat!</span>
+            <span className="text-sm text-green-500">Saved!</span>
           ) : (
             <>
               <select
@@ -115,7 +114,7 @@ export default function JobItem(props: Job) {
                 disabled={saving}
                 className="text-sm border border-green-500 text-green-500 rounded px-2 py-1 hover:bg-green-500 hover:text-black"
               >
-                {saving ? "Sparar..." : "Spara jobb"}
+                {saving ? "Saving..." : "Save job"}
               </button>
             </>
           )}

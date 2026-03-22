@@ -2,11 +2,7 @@ import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
 
 const pool = new Pool({
-  user: "postgres",
-  host: "localhost",
-  database: "jobchaser",
-  password: "Dxub71de",
-  port: 5432,
+  connectionString: process.env.DATABASE_URL,
 });
 
 export const db = drizzle(pool);
